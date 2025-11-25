@@ -228,6 +228,38 @@ void searchAccount() {
 }
 
 //F05
+void listAccountPagination() {
+	int page_n,page_s;
+	int start,end;
+	while (1) {
+	   printf("Nhap so trang: ");
+	   scanf("%d",&page_n);
+   	   printf("Nhap so phan tu cua trang: ");
+	   scanf("%d",&page_s);
+	   //Kiem tra
+	   if (page_n<=0 || page_s<=0) {
+           printf("Loi du lieu nhap khong hop le! Vui long nhap lai.\n\n");
+           continue;
+        }
+    start=(page_n-1)*page_s;
+     //Neu vuot
+     if (start>account) {
+    	printf("Khong tim thay du lieu cho trang nay! Vui long nhap lai.\n\n");
+            continue;
+	 }
+	break;
+   }
+   end= start+page_s;
+   if (end > account) {
+   	 end = account;
+   }  
+   printf("====Trang %d====\n",page_n);
+   for (int i = start; i < end; i++) {
+        printf("%d. ID: %s | Ten: %s | SDT: %s | So du: %.2f | Trang thai: %s\n",
+            i + 1,acc[i].accountId,acc[i].fullName,acc[i].phone,
+            acc[i].balance,acc[i].status == 1 ? "Active" : "Locked");
+    }
+}
 
 int main() {
     int choice;
@@ -264,6 +296,18 @@ int main() {
             	searchAccount();
                 break;
 
+            case 5:
+            	listAccountPagination();
+            	break;
+            
+            case 6:
+            	break;
+            	
+            case 7:
+            	break;
+            	
+            case 8:
+            	break;
             case 9:
                 printf("Thoat chuong trinh...\n");
                 break;
