@@ -38,6 +38,11 @@ int checkID(char id[]) {
     return 0;
 }
 
+void addAccount();
+void updateAccount();
+void lockAccount();
+void searchAccount();
+
 //F01
 void addAccount() {
     struct Account a;
@@ -87,6 +92,7 @@ void updateAccount() {
     char id[20];
     printf("Nhap ma tai khoan can cap nhat: ");
     scanf("%s", id);
+    
     int index = -1;
     //Tim theo ID
     for (int i = 0; i < account; i++) {
@@ -156,6 +162,7 @@ void lockAccount() {
 		printf("Tai khoan khong ton tai!!\nVui long nhap lai!!");
 		continue;
 	    }
+	    
     //Xac nhan khoa
     char confirm[3];
     printf("Ban co muon xoa tai khoan nay (y/n): ");
