@@ -64,22 +64,36 @@ void addAccount() {
     }
     while (1) {
         printf("Nhap ho va ten: ");
-        fgets(a.fullName, sizeof(a.fullName), stdin);
+        fgets(a.fullName,sizeof(a.fullName),stdin);
         a.fullName[strcspn(a.fullName, "\n")] = 0;
         if (strlen(a.fullName) == 0) {
             printf("Khong duoc de trong. Vui long nhap lai.\n");
         } else break;
     }
     
-    while (1) {
-        printf("Nhap so dien thoai: ");
-        fgets(a.phone, sizeof(a.phone), stdin);
-        a.phone[strcspn(a.phone, "\n")] = 0;
-        if (strlen(a.phone) == 0) {
-            printf("Khong duoc de trong. Vui long nhap lai.\n");
-        } else break;
+while (1) {
+    printf("Nhap so dien thoai: ");
+    fgets(a.phone,sizeof(a.phone),stdin);
+    a.phone[strcspn(a.phone, "\n")] = 0;
+    if (strlen(a.phone) == 0) {
+        printf("Khong duoc de trong. Vui long nhap lai.\n");
+        continue;
     }
-    
+    //Kiem tra trung sdt
+    int duplicate = 0;
+    for (int i = 0; i < account; i++) {
+        if (strcmp(acc[i].phone, a.phone) == 0) {
+            duplicate = 1;
+            break;
+        }
+    }
+    if (duplicate) {
+        printf("So dien thoai da ton tai. Vui long nhap lai.\n");
+    } else {
+        break;
+    }
+}
+
     //Gan gia tri
     a.balance = 0;
     a.status = 1;
@@ -213,6 +227,7 @@ void searchAccount() {
     }
 }
 
+//F05
 
 int main() {
     int choice;
