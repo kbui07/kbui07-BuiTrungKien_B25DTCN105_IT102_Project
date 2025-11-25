@@ -45,11 +45,13 @@ void addAccount() {
     printf("Nhap ma tai khoan: ");
     fgets(a.accountId,sizeof(a.accountId),stdin);
     a.accountId[strcspn(a.accountId, "\n")] = 0;
+    
     //Kiem tra ID
     if (checkID(a.accountId)) {
         printf("Loi xac thuc du lieu\n\n");
         return;
     }
+    
     //Kiem tra mang day
     if (account >= 100) {
         printf("Mang day\n\n");
@@ -59,20 +61,20 @@ void addAccount() {
         printf("Nhap ho va ten: ");
         fgets(a.fullName, sizeof(a.fullName), stdin);
         a.fullName[strcspn(a.fullName, "\n")] = 0;
-
         if (strlen(a.fullName) == 0) {
             printf("Khong duoc de trong. Vui long nhap lai.\n");
         } else break;
     }
+    
     while (1) {
         printf("Nhap so dien thoai: ");
         fgets(a.phone, sizeof(a.phone), stdin);
         a.phone[strcspn(a.phone, "\n")] = 0;
-
         if (strlen(a.phone) == 0) {
             printf("Khong duoc de trong. Vui long nhap lai.\n");
         } else break;
     }
+    
     //Gan gia tri
     a.balance = 0;
     a.status = 1;
@@ -114,6 +116,7 @@ void updateAccount() {
             printf("Ho ten da ton tai. Vui long nhap lai.\n");
         } else break;
     }
+    
     while (1) {
         printf("Nhap so dien thoai moi: ");
         fgets(acc[index].phone, sizeof(acc[index].phone), stdin);
@@ -131,6 +134,78 @@ void updateAccount() {
     }
     printf("Cap nhat thanh cong.\n\n");
 }
+
+//F03
+void lockAccount() {
+	char id[20];
+	while (1) {
+		getchar();
+	    printf("Nhap ma tai khoan can khoa: ");
+	    fgets(id,sizeof(id),stdin);
+		id[strcspn(id,"\n")] = 0;
+	
+    	int index = -1;
+    	//Tim tai khoan theo ID
+	    for (int i=0;i<account;i++) {
+    	    if (strcmp(acc[i].accountId,id) == 0) {
+    		   index = i;
+    	    break;
+		}
+	}
+	if (index == -1) {
+		printf("Tai khoan khong ton tai!!\nVui long nhap lai!!");
+		continue;
+	    }
+    //Xac nhan khoa
+    char confirm[3];
+    printf("Ban co muon xoa tai khoan nay (y/n): ");
+    fgets(confirm,sizeof(confirm),stdin);
+    confirm[strcspn(confirm,"\n")] = 0;
+    if (confirm[0]=='y' || confirm[0]=='Y') {
+    	acc[index].status = 0;
+    	printf("Khoa tai khoan thanh cong!!\n");
+	} else {
+		printf("Huy thao tac!!\n");
+	}
+	break;
+  }
+}
+
+//F04
+void searchAccount() {
+    char keyword[50];
+    getchar();
+    printf("Nhap tu khoa tim kiem (ID hoac Ten): ");
+    fgets(keyword, sizeof(keyword), stdin);
+    keyword[strcspn(keyword, "\n")] = 0;
+
+    int found = 0;
+    for (int i = 0; i < account; i++) {
+        //Tìm theo ID
+        if (strcmp(acc[i].accountId,keyword) == 0) {
+            printf("ID: %s | Ten: %s | SDT: %s | So du: %f | Trang thai: %s\n",
+                   acc[i].accountId,acc[i].fullName,acc[i].phone,
+                   acc[i].balance,acc[i].status == 1? "Active" : "Locked");
+            found = 1;
+            continue;
+        }
+
+        //Tìm theo tên
+        if (strstr(acc[i].fullName,keyword) != NULL) {
+            printf("ID: %s | Ten: %s | SDT: %s | So du: %f | Trang thai: %s\n",
+                acc[i].accountId,acc[i].fullName,acc[i].phone,
+                acc[i].balance,acc[i].status == 1? "Active" : "Locked");
+            found = 1;
+        }
+    }
+
+    if (!found) {
+        printf("Khong co ket qua phu hop!\n\n");
+    } else {
+        printf("Ket thuc tim kiem!\n\n");
+    }
+}
+
 
 int main() {
     int choice;
@@ -160,9 +235,11 @@ int main() {
                 break;
 
             case 3:
+            	lockAccount();
                 break;
 
             case 4:
+            	searchAccount();
                 break;
 
             case 9:
@@ -174,4 +251,3 @@ int main() {
     } while(choice != 9);
     return 0;
 }
-
