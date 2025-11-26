@@ -24,10 +24,79 @@ struct Account acc[100]= {
     {"AC1002", "Tran Thi B",  "0912345678", 12000000, 1},
     {"AC1003", "Le Van C",    "0935123456", 8500000, 0}, 
     {"AC1004", "Pham Thi D",  "0909988776", 3000000, 1},
-    {"AC1005", "Hoang Van E", "0977554466", 20000000, 1}
+    {"AC1005", "Hoang Van E", "0977554466", 20000000, 1},
+    {"AC1006", "Truong Van F", "092341356", 50000000, 0},
+    {"AC1007", "Tran Minh G", "0962351345", 32000000, 1},
+    {"AC1008", "Duong Minh H", "0961254131", 5400000, 0},
+    {"AC1009", "Bui Van I", "0981245754", 990000000, 1}
 };
-int account = 5;
+int account = 9;
   
+void addAccount();
+void updateAccount();
+void lockAccount();
+void searchAccount();
+void listAccountPagination();
+void sortAccount();
+
+int main() {
+    int choice;
+    do{
+        printf("|===============MENU===============|\n");
+        printf("|1. Them moi tai khoan             |\n");
+        printf("|2. Cap nhat thong tin             |\n");
+        printf("|3. Quan ly trang thai (Khoa/Xoa)  |\n");
+        printf("|4. Tra cuu                        |\n");
+        printf("|5. Danh sach (Phan trang)         |\n");
+        printf("|6. Sap xep danh sach              |\n");
+        printf("|7. Giao dich chuyen khoan         |\n");
+        printf("|8. Lich su giao dich              |\n");
+        printf("|9. Thoat chuong trinh             |\n");
+        printf("|==================================|\n");
+        printf("Moi ban nhap chuc nang: ");
+        scanf("%d",&choice);
+        printf("\n");
+
+        switch (choice) {
+            case 1:
+                addAccount();
+                break;
+
+            case 2:
+                updateAccount();
+                break;
+
+            case 3:
+            	lockAccount();
+                break;
+
+            case 4:
+            	searchAccount();
+                break;
+
+            case 5:
+            	listAccountPagination();
+            	break;
+            
+            case 6:
+            	sortAccount();
+            	break;
+            	
+            case 7:
+            	break;
+            	
+            case 8:
+            	break;
+            case 9:
+                printf("Thoat chuong trinh...\n");
+                break;
+            default:
+                printf(" Lua chon khong hop le!\n\n");
+        }
+    } while(choice != 9);
+    return 0;
+}
+
 //Ham kiem tra ID
 int checkID(char id[]) {
     for (int i=0;i<account;i++) {
@@ -37,11 +106,6 @@ int checkID(char id[]) {
     }
     return 0;
 }
-
-void addAccount();
-void updateAccount();
-void lockAccount();
-void searchAccount();
 
 //F01
 void addAccount() {
@@ -62,6 +126,7 @@ void addAccount() {
         printf("Mang day\n\n");
         return;
     }
+    
     while (1) {
         printf("Nhap ho va ten: ");
         fgets(a.fullName,sizeof(a.fullName),stdin);
@@ -93,7 +158,6 @@ while (1) {
         break;
     }
 }
-
     //Gan gia tri
     a.balance = 0;
     a.status = 1;
@@ -106,8 +170,8 @@ void updateAccount() {
     char id[20];
     printf("Nhap ma tai khoan can cap nhat: ");
     scanf("%s", id);
-    
     int index = -1;
+    
     //Tim theo ID
     for (int i = 0; i < account; i++) {
         if (strcmp(acc[i].accountId, id) == 0) {
@@ -115,11 +179,13 @@ void updateAccount() {
             break;
         }
     }
+    
     //Khong ton tai
     if (index == -1) {
         printf("Khong tim thay tai khoan\n\n");
         return;
     }
+    
     getchar();
     while (1) {
         printf("Nhap ho ten moi: ");
@@ -163,8 +229,8 @@ void lockAccount() {
 	    printf("Nhap ma tai khoan can khoa: ");
 	    fgets(id,sizeof(id),stdin);
 		id[strcspn(id,"\n")] = 0;
-	
-    	int index = -1;
+		int index = -1;
+		
     	//Tim tai khoan theo ID
 	    for (int i=0;i<account;i++) {
     	    if (strcmp(acc[i].accountId,id) == 0) {
@@ -176,6 +242,12 @@ void lockAccount() {
 		printf("Tai khoan khong ton tai!!\nVui long nhap lai!!");
 		continue;
 	    }
+    printf("====Thong tin hien tai====\n");
+    printf("ID: %s\n",acc[index].accountId);
+    printf("Ten: %s\n",acc[index].fullName);
+    printf("SDT: %s\n",acc[index].phone);
+    printf("So du: %f\n",acc[index].balance);
+    printf("Trang thai: %s\n",acc[index].status == 1 ? "Active" : "Locked");
 	    
     //Xac nhan khoa
     char confirm[3];
@@ -249,71 +321,58 @@ void listAccountPagination() {
 	 }
 	break;
    }
-   end= start+page_s;
-   if (end > account) {
-   	 end = account;
+    end= start+page_s;
+    if (end > account) {
+   	end = account;
    }  
-   printf("====Trang %d====\n",page_n);
-   for (int i = start; i < end; i++) {
+    printf("====Trang %d====\n",page_n);
+    for (int i = start; i < end; i++) {
         printf("%d. ID: %s | Ten: %s | SDT: %s | So du: %.2f | Trang thai: %s\n",
             i + 1,acc[i].accountId,acc[i].fullName,acc[i].phone,
             acc[i].balance,acc[i].status == 1 ? "Active" : "Locked");
     }
 }
 
-int main() {
-    int choice;
-    do{
-        printf("|===============MENU===============|\n");
-        printf("|1. Them moi tai khoan             |\n");
-        printf("|2. Cap nhat thong tin             |\n");
-        printf("|3. Quan ly trang thai (Khoa/Xoa)  |\n");
-        printf("|4. Tra cuu                        |\n");
-        printf("|5. Danh sach                      |\n");
-        printf("|6. Sap xep danh sach              |\n");
-        printf("|7. Giao dich chuyen khoan         |\n");
-        printf("|8. Lich su giao dich              |\n");
-        printf("|9. Thoat chuong trinh             |\n");
-        printf("|==================================|\n");
-        printf("Moi ban nhap chuc nang: ");
-        scanf("%d",&choice);
-        printf("\n");
-
-        switch (choice) {
-            case 1:
-                addAccount();
-                break;
-
-            case 2:
-                updateAccount();
-                break;
-
-            case 3:
-            	lockAccount();
-                break;
-
-            case 4:
-            	searchAccount();
-                break;
-
-            case 5:
-            	listAccountPagination();
-            	break;
-            
-            case 6:
-            	break;
-            	
-            case 7:
-            	break;
-            	
-            case 8:
-            	break;
-            case 9:
-                printf("Thoat chuong trinh...\n");
-                break;
-            default:
-                printf(" Lua chon khong hop le!\n\n");
-        }
-    } while(choice != 9);
-    return 0;
+//F06
+void sortAccount() {
+	if (account ==0 ) {
+		printf("Khong co du lieu can sap xep");
+	return;
+	}
+	
+	int ch;
+	printf("1.Sap xep theo so du giam dan\n");
+	printf("2.Sap xep theo ten A-Z\n");
+	printf("Nhap lua chon: ");
+	scanf("%d",&ch);
+	
+	//Sap xep
+	for (int i=0;i<account;i++) {
+		for (int j=i+1;j<account;j++) {
+			
+			//Giam dan
+			if (ch == 1) {
+				if(acc[i].balance<acc[j].balance) {
+					struct Account
+					t=acc[i];
+					acc[i]=acc[j];
+					acc[j]=t;
+				}
+			}
+			
+			//Theo ten
+			else if (ch == 2) {
+				if(strcmp(acc[i].fullName,acc[j].fullName)>0) {
+					struct Account 
+					t=acc[i];
+					acc[i]=acc[j];
+					acc[j]=t;
+				}
+			}
+		}
+	}
+	if (ch<1 || ch>2) {
+		printf("Lua chon khong hop le!!\n");
+	}
+	printf("Da sap xep xong!!\n");
 }
