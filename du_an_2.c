@@ -144,6 +144,13 @@ while (1) {
         printf("Khong duoc de trong. Vui long nhap lai.\n");
         continue;
     }
+    
+    //Kiem tra 10 so
+    if (strlen(a.phone) != 10) {
+        printf("So dien thoai phai dung 10 ky tu. Vui long nhap lai.\n");
+        continue;
+    }
+    
     //Kiem tra trung sdt
     int duplicate = 0;
     for (int i = 0; i < account; i++) {
@@ -168,55 +175,87 @@ while (1) {
 //F02
 void updateAccount() {
     char id[20];
-    printf("Nhap ma tai khoan can cap nhat: ");
-    scanf("%s", id);
     int index = -1;
-    
-    //Tim theo ID
-    for (int i = 0; i < account; i++) {
-        if (strcmp(acc[i].accountId, id) == 0) {
-            index = i;
-            break;
-        }
-    }
-    
-    //Khong ton tai
-    if (index == -1) {
-        printf("Khong tim thay tai khoan\n\n");
-        return;
-    }
-    
+
     getchar();
     while (1) {
-        printf("Nhap ho ten moi: ");
-        fgets(acc[index].fullName, sizeof(acc[index].fullName), stdin);
-        acc[index].fullName[strcspn(acc[index].fullName, "\n")] = 0;
-        int duplicate = 0;
-        for (int i = 0; i < account; i++) {
-            if (i != index && strcmp(acc[i].fullName, acc[index].fullName) == 0) {
-                duplicate = 1;
+        printf("Nhap ma tai khoan: ");
+        fgets(id,sizeof(id),stdin);
+        id[strcspn(id, "\n")]=0;
+        if (strlen(id)==0) {
+            printf("Khong duoc de trong. Vui long nhap lai.\n");
+            continue;
+        }
+
+        //Tim tai khoan
+        index=-1;
+        for (int i=0;i<account;i++) {
+            if (strcmp(acc[i].accountId,id)==0) {
+                index=i;
                 break;
             }
         }
+
+        if (index==-1) {
+            printf("Ma tai khoan khong ton tai. Vui long nhap lai.\n");
+            continue;
+        }
+
+        break;
+    }
+
+    char temp[100];
+
+    //Cap nhat ten
+    while (1) {
+        printf("Nhap ho ten moi (Enter = giu nguyen): ");
+        fgets(temp, sizeof(temp), stdin);
+        temp[strcspn(temp, "\n")] = 0;
+        //Enter giu nguyen
+        if (strlen(temp) == 0) break; 
+        //Kiem tra trung ten
+        int duplicate=0;
+        for (int i=0;i<account;i++) {
+            if (i!=index && strcmp(acc[i].fullName,temp) == 0) {
+                duplicate=1;
+                break;
+            }
+        }
+
         if (duplicate) {
             printf("Ho ten da ton tai. Vui long nhap lai.\n");
-        } else break;
+        } else {
+            strcpy(acc[index].fullName,temp);
+            break;
+        }
     }
-    
+
+    //Cap nhat sdt
     while (1) {
-        printf("Nhap so dien thoai moi: ");
-        fgets(acc[index].phone, sizeof(acc[index].phone), stdin);
-        acc[index].phone[strcspn(acc[index].phone, "\n")] = 0;
-        int duplicate = 0;
-        for (int i = 0; i < account; i++) {
-            if (i != index && strcmp(acc[i].phone, acc[index].phone) == 0) {
-                duplicate = 1;
+        printf("Nhap so dien thoai moi (Enter = giu nguyen): ");
+        fgets(temp, sizeof(temp),stdin);
+        temp[strcspn(temp, "\n")] = 0;
+        //Enter giu nguyen
+        if (strlen(temp)==0) break;
+        //Kiem tra 10 so
+        if (strlen(temp)!=10) {
+            printf("So dien thoai phai dung 10 ky tu. Vui long nhap lai.\n");
+            continue;
+        }
+        //Kiem tra trung
+        int duplicate=0;
+        for (int i=0;i<account;i++) {
+            if (i!=index && strcmp(acc[i].phone,temp) == 0) {
+                duplicate=1;
                 break;
             }
         }
         if (duplicate) {
             printf("So dien thoai da ton tai. Vui long nhap lai.\n");
-        } else break;
+        } else {
+            strcpy(acc[index].phone,temp);
+            break;
+        }
     }
     printf("Cap nhat thanh cong.\n\n");
 }
@@ -301,17 +340,15 @@ void searchAccount() {
 
 //F05
 void listAccountPagination() {
-	int page_n,page_s;
+	int page_n,page_s=5;
 	int start,end;
 	while (1) {
 	   printf("Nhap so trang: ");
 	   scanf("%d",&page_n);
-   	   printf("Nhap so phan tu cua trang: ");
-	   scanf("%d",&page_s);
 	   //Kiem tra
-	   if (page_n<=0 || page_s<=0) {
-           printf("Loi du lieu nhap khong hop le! Vui long nhap lai.\n\n");
-           continue;
+	   if (page_n<=0) {
+            printf("So trang khong hop le! Vui long nhap lai.\n\n");
+            continue;
         }
     start=(page_n-1)*page_s;
      //Neu vuot
