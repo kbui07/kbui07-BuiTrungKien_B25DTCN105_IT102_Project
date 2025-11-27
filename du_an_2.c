@@ -38,6 +38,7 @@ void lockAccount();
 void searchAccount();
 void listAccountPagination();
 void sortAccount();
+void transferMoney();
 
 int main() {
     int choice;
@@ -83,6 +84,7 @@ int main() {
             	break;
             	
             case 7:
+            	transferMoney();
             	break;
             	
             case 8:
@@ -412,4 +414,62 @@ void sortAccount() {
 		printf("Lua chon khong hop le!!\n");
 	}
 	printf("Da sap xep xong!!\n");
+}
+
+//F07
+void transferMoney() {
+    char senderId[20],receiverId[20];
+    double amount;
+    int senderIndex=-1, receiverIndex=-1;
+
+    getchar();
+    printf("Nhap ID nguoi gui: ");
+    fgets(senderId,sizeof(senderId),stdin);
+    senderId[strcspn(senderId,"\n")] = 0;
+    printf("Nhap ID nguoi nhan: ");
+    fgets(receiverId,sizeof(receiverId),stdin);
+    receiverId[strcspn(receiverId,"\n")] = 0;
+
+    //1.senderId & receiverId phai ton tai
+    for (int i = 0; i < account; i++) {
+        if (strcmp(acc[i].accountId, senderId)==0) senderIndex = i;
+        if (strcmp(acc[i].accountId, receiverId)==0) receiverIndex = i;
+    }
+
+    if (senderIndex==-1 || receiverIndex==-1) {
+        printf("Loi xac thuc du lieu (ID khong ton tai)\n\n");
+        return;
+    }
+
+    //2.Không duoc trùng ID
+    if (strcmp(senderId, receiverId)==0) {
+        printf("Nguoi gui va nguoi nhan khong duoc trung nhau!\n\n");
+        return;
+    }
+
+    //3.Sender phai active
+    if (acc[senderIndex].status!=1) {
+        printf("Tai khoan gui dang bi khoa, khong the thuc hien giao dich!\n\n");
+        return;
+    }
+
+    //4.So tien>0
+    printf("Nhap so tien can chuyen: ");
+    scanf("%lf",&amount);
+    if (amount <= 0) {
+        printf("So tien phai lon hon 0!\n\n");
+        return;
+    }
+
+    //5.Sender du tien
+    if (amount>acc[senderIndex].balance) {
+        printf("So du khong du de thuc hien giao dich!\n\n");
+        return;
+    }
+
+    acc[senderIndex].balance-=amount;
+    acc[receiverIndex].balance+=amount;
+    printf("\n===== GIAO DICH THANH CONG =====\n");
+    printf("Nguoi gui: %s | So du moi: %.f\n", acc[senderIndex].accountId,acc[senderIndex].balance);
+    printf("Nguoi nhan: %s | So du moi: %.f\n", acc[receiverIndex].accountId,acc[receiverIndex].balance);
 }
