@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 
 struct Account {
     char accountId[20];
@@ -39,6 +40,7 @@ void searchAccount();
 void listAccountPagination();
 void sortAccount();
 void transferMoney();
+void toLowerStr(char s[]);
 
 int main() {
     int choice;
@@ -89,6 +91,7 @@ int main() {
             	
             case 8:
             	break;
+            	
             case 9:
                 printf("Thoat chuong trinh...\n");
                 break;
@@ -211,10 +214,11 @@ void updateAccount() {
     //Cap nhat ten
     while (1) {
         printf("Nhap ho ten moi (Enter = giu nguyen): ");
-        fgets(temp, sizeof(temp), stdin);
-        temp[strcspn(temp, "\n")] = 0;
+        fgets(temp,sizeof(temp),stdin);
+        temp[strcspn(temp, "\n")]=0;
         //Enter giu nguyen
-        if (strlen(temp) == 0) break; 
+        if (strlen(temp) == 0) 
+		    break; 
         //Kiem tra trung ten
         int duplicate=0;
         for (int i=0;i<account;i++) {
@@ -235,10 +239,11 @@ void updateAccount() {
     //Cap nhat sdt
     while (1) {
         printf("Nhap so dien thoai moi (Enter = giu nguyen): ");
-        fgets(temp, sizeof(temp),stdin);
+        fgets(temp,sizeof(temp),stdin);
         temp[strcspn(temp, "\n")] = 0;
         //Enter giu nguyen
-        if (strlen(temp)==0) break;
+        if (strlen(temp)==0) 
+		    break;
         //Kiem tra 10 so
         if (strlen(temp)!=10) {
             printf("So dien thoai phai dung 10 ky tu. Vui long nhap lai.\n");
@@ -305,31 +310,54 @@ void lockAccount() {
   }
 }
 
+//Ham chuyen chu hoa thanh thuong
+void toLowerStr(char s[]) {
+	int i=0;
+	while(s[i]='\0') {
+		if (s[i]>='A' && s[i]<='Z') {
+			s[i]=s[i+32];
+		}
+		i++;
+	}
+}
+
 //F04
 void searchAccount() {
-    char keyword[50];
+    char keyWord[50];
+    char keyLower[50];
     getchar();
     printf("Nhap tu khoa tim kiem (ID hoac Ten): ");
-    fgets(keyword, sizeof(keyword), stdin);
-    keyword[strcspn(keyword, "\n")] = 0;
+    fgets(keyWord,sizeof(keyWord),stdin);
+    keyWord[strcspn(keyWord, "\n")] = 0;
+    
+    //chuyen keyword->lowercase
+    strcpy(keyLower,keyWord);
+    toLowerStr(keyLower);
 
     int found = 0;
-    for (int i = 0; i < account; i++) {
-        //Tìm theo ID
-        if (strcmp(acc[i].accountId,keyword) == 0) {
+    for (int i=0;i<account;i++) {
+    	
+    	//Tim theo ID
+    	char idLower[20];
+        strcpy(idLower,acc[i].accountId);
+        toLowerStr(idLower);
+        if (strcmp(idLower,keyLower)==0) {
             printf("ID: %s | Ten: %s | SDT: %s | So du: %f | Trang thai: %s\n",
                    acc[i].accountId,acc[i].fullName,acc[i].phone,
                    acc[i].balance,acc[i].status == 1? "Active" : "Locked");
-            found = 1;
+            found=1;
             continue;
         }
 
         //Tìm theo tên
-        if (strstr(acc[i].fullName,keyword) != NULL) {
+        char nameLower[50];
+        strcpy(nameLower,acc[i].fullName);
+        toLowerStr(nameLower);
+        if (strstr(nameLower,keyLower)!=NULL) {
             printf("ID: %s | Ten: %s | SDT: %s | So du: %f | Trang thai: %s\n",
                 acc[i].accountId,acc[i].fullName,acc[i].phone,
                 acc[i].balance,acc[i].status == 1? "Active" : "Locked");
-            found = 1;
+            found=1;
         }
     }
 
@@ -430,10 +458,12 @@ void transferMoney() {
     fgets(receiverId,sizeof(receiverId),stdin);
     receiverId[strcspn(receiverId,"\n")] = 0;
 
-    //1.senderId & receiverId phai ton tai
-    for (int i = 0; i < account; i++) {
-        if (strcmp(acc[i].accountId, senderId)==0) senderIndex = i;
-        if (strcmp(acc[i].accountId, receiverId)==0) receiverIndex = i;
+    //senderId va receiverId phai ton tai
+    for (int i=0;i<account;i++) {
+        if (strcmp(acc[i].accountId,senderId)==0) 
+		    senderIndex = i;
+        if (strcmp(acc[i].accountId,receiverId)==0) 
+		    receiverIndex = i;
     }
 
     if (senderIndex==-1 || receiverIndex==-1) {
@@ -441,27 +471,27 @@ void transferMoney() {
         return;
     }
 
-    //2.Không duoc trùng ID
-    if (strcmp(senderId, receiverId)==0) {
+    //Không duoc trùng ID
+    if (strcmp(senderId,receiverId)==0) {
         printf("Nguoi gui va nguoi nhan khong duoc trung nhau!\n\n");
         return;
     }
 
-    //3.Sender phai active
+    //Sender phai active
     if (acc[senderIndex].status!=1) {
         printf("Tai khoan gui dang bi khoa, khong the thuc hien giao dich!\n\n");
         return;
     }
 
-    //4.So tien>0
+    //So tien>0
     printf("Nhap so tien can chuyen: ");
-    scanf("%lf",&amount);
-    if (amount <= 0) {
+    scanf("%f",&amount);
+    if (amount<=0) {
         printf("So tien phai lon hon 0!\n\n");
         return;
     }
 
-    //5.Sender du tien
+    //Sender du tien
     if (amount>acc[senderIndex].balance) {
         printf("So du khong du de thuc hien giao dich!\n\n");
         return;
@@ -470,6 +500,28 @@ void transferMoney() {
     acc[senderIndex].balance-=amount;
     acc[receiverIndex].balance+=amount;
     printf("\n===== GIAO DICH THANH CONG =====\n");
-    printf("Nguoi gui: %s | So du moi: %.f\n", acc[senderIndex].accountId,acc[senderIndex].balance);
-    printf("Nguoi nhan: %s | So du moi: %.f\n", acc[receiverIndex].accountId,acc[receiverIndex].balance);
+    printf("Nguoi gui: %s | So du moi: %f\n", acc[senderIndex].accountId,acc[senderIndex].balance);
+    printf("Nguoi nhan: %s | So du moi: %f\n", acc[receiverIndex].accountId,acc[receiverIndex].balance);
+}
+
+//F08
+void viewTransactionHistory() {
+	char targetId[20];
+	int index=-1;
+	getchar();
+	printf("Nhap ma tai khoan can xem lich su: ");
+	fgets(targetId,sizeof(targetId),stdin);
+	targetId[strcspn(targetId,"\n")]=0;
+	
+	//Kiem tra tai khoan ton tai
+	for (int i=0;i<account;i++) {
+		if (strcmp(acc[i].accountId,targetId)==0) {
+			index=i;
+			break;
+		}
+	}
+	if (index=-1) {
+		printf("Loi: Tai khoan khong ton tai!\n");
+		return;
+	}
 }
