@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
 
 struct Account {
     char accountId[20];
@@ -29,9 +28,18 @@ struct Account acc[100]= {
     {"AC1006", "Truong Van F", "092341356", 50000000, 0},
     {"AC1007", "Tran Minh G", "0962351345", 32000000, 1},
     {"AC1008", "Duong Minh H", "0961254131", 5400000, 0},
-    {"AC1009", "Bui Van I", "0981245754", 990000000, 1}
+    {"AC1009", "Bui Van I", "0981245754", 990000000, 1},
+    {"AC1010", "Pham Van K", "0982723411", 12900000, 0}
 };
 int account = 9;
+
+struct Transaction trans[100] = {
+    {"T001","AC1001","AC1002",500000,"OUT","2025-10-01"},
+    {"T002","AC1002","AC1005",200000,"OUT","2025-10-03"},
+    {"T003","AC1005","AC1001",1000000,"OUT","2025-11-10"},
+    {"T004","AC1001","AC1009",250000,"OUT","2026-11-15"}
+};
+int transCount = 4;
   
 void addAccount();
 void updateAccount();
@@ -41,6 +49,7 @@ void listAccountPagination();
 void sortAccount();
 void transferMoney();
 void toLowerStr(char s[]);
+void viewTransactionHistory();
 
 int main() {
     int choice;
@@ -90,6 +99,7 @@ int main() {
             	break;
             	
             case 8:
+            	viewTransactionHistory();
             	break;
             	
             case 9:
@@ -118,7 +128,7 @@ void addAccount() {
     getchar();
     printf("Nhap ma tai khoan: ");
     fgets(a.accountId,sizeof(a.accountId),stdin);
-    a.accountId[strcspn(a.accountId, "\n")] = 0;
+    a.accountId[strcspn(a.accountId,"\n")]=0;
     
     //Kiem tra ID
     if (checkID(a.accountId)) {
@@ -135,8 +145,8 @@ void addAccount() {
     while (1) {
         printf("Nhap ho va ten: ");
         fgets(a.fullName,sizeof(a.fullName),stdin);
-        a.fullName[strcspn(a.fullName, "\n")] = 0;
-        if (strlen(a.fullName) == 0) {
+        a.fullName[strcspn(a.fullName,"\n")]=0;
+        if (strlen(a.fullName)==0) {
             printf("Khong duoc de trong. Vui long nhap lai.\n");
         } else break;
     }
@@ -145,7 +155,7 @@ while (1) {
     printf("Nhap so dien thoai: ");
     fgets(a.phone,sizeof(a.phone),stdin);
     a.phone[strcspn(a.phone, "\n")] = 0;
-    if (strlen(a.phone) == 0) {
+    if (strlen(a.phone)==0) {
         printf("Khong duoc de trong. Vui long nhap lai.\n");
         continue;
     }
@@ -313,7 +323,7 @@ void lockAccount() {
 //Ham chuyen chu hoa thanh thuong
 void toLowerStr(char s[]) {
 	int i=0;
-	while(s[i]='\0') {
+	while(s[i]!='\0') {
 		if (s[i]>='A' && s[i]<='Z') {
 			s[i]=s[i+32];
 		}
@@ -418,7 +428,7 @@ void sortAccount() {
 		for (int j=i+1;j<account;j++) {
 			
 			//Giam dan
-			if (ch == 1) {
+			if (ch==1) {
 				if(acc[i].balance<acc[j].balance) {
 					struct Account
 					t=acc[i];
@@ -428,7 +438,7 @@ void sortAccount() {
 			}
 			
 			//Theo ten
-			else if (ch == 2) {
+			else if (ch==2) {
 				if(strcmp(acc[i].fullName,acc[j].fullName)>0) {
 					struct Account 
 					t=acc[i];
@@ -520,8 +530,34 @@ void viewTransactionHistory() {
 			break;
 		}
 	}
-	if (index=-1) {
+	if (index==-1) {
 		printf("Loi: Tai khoan khong ton tai!\n");
 		return;
 	}
+	
+	//Kiem tra co giao dich chua
+	int hasTrans=0;
+    for (int i=0;i<transCount;i++) {
+        if (strcmp(trans[i].senderId,targetId)==0 || strcmp(trans[i].receiverId,targetId)==0) {
+            hasTrans=1;
+            break;
+        }
+    }
+	if (!hasTrans) {
+        printf("He thong chua co giao dich nao cho tai khoan nay.\n\n");
+        return;
+    }
+
+    //Hien thi giao dich
+    printf("\n=====LICH SU GIAO DICH=====\n");
+    for (int i=0;i<transCount;i++) {
+        if (strcmp(trans[i].senderId,targetId)==0) {
+            printf("[Out]  MaGD: %s | Gui den: %s | So tien: %f | Ngay: %s\n",
+                   trans[i].transId,trans[i].receiverId,trans[i].amount,trans[i].date);
+        }
+        if (strcmp(trans[i].receiverId,targetId)==0) {
+            printf("[In] MaGD: %s | Nhan tu: %s | So tien: %f | Ngay: %s\n",
+                   trans[i].transId,trans[i].senderId,trans[i].amount,trans[i].date);
+        }
+    }
 }
