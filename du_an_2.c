@@ -126,20 +126,29 @@ int checkID(char id[]) {
 void addAccount() {
     struct Account a;
     getchar();
-    printf("Nhap ma tai khoan: ");
-    fgets(a.accountId,sizeof(a.accountId),stdin);
-    a.accountId[strcspn(a.accountId,"\n")]=0;
-    
-    //Kiem tra ID
-    if (checkID(a.accountId)) {
-        printf("Loi xac thuc du lieu\n\n");
-        return;
+    while (1) {
+        printf("Nhap ma tai khoan: ");
+        fgets(a.accountId,sizeof(a.accountId),stdin);
+        a.accountId[strcspn(a.accountId,"\n")]=0;
+        
+        //Kiem tra trong
+        if (strlen(a.accountId)==0) {
+            printf("Ma tai khoan khong duoc de trong. Vui long nhap lai.\n");
+            continue;
+        }
+
+        //Kiem tra ID trung
+        if (checkID(a.accountId)) {
+            printf("Loi xac thuc du lieu\n\n");
+            return;
+        }
+        break;
     }
-    
-    //Kiem tra mang day
-    if (account >= 100) {
-        printf("Mang day\n\n");
-        return;
+
+        //Kiem tra mang day
+        if (account>=100) {
+            printf("Mang day\n\n");
+            return;
     }
     
     while (1) {
@@ -154,23 +163,23 @@ void addAccount() {
 while (1) {
     printf("Nhap so dien thoai: ");
     fgets(a.phone,sizeof(a.phone),stdin);
-    a.phone[strcspn(a.phone, "\n")] = 0;
+    a.phone[strcspn(a.phone,"\n")]=0;
     if (strlen(a.phone)==0) {
         printf("Khong duoc de trong. Vui long nhap lai.\n");
         continue;
     }
     
     //Kiem tra 10 so
-    if (strlen(a.phone) != 10) {
+    if (strlen(a.phone)!=10) {
         printf("So dien thoai phai dung 10 ky tu. Vui long nhap lai.\n");
         continue;
     }
     
     //Kiem tra trung sdt
-    int duplicate = 0;
-    for (int i = 0; i < account; i++) {
-        if (strcmp(acc[i].phone, a.phone) == 0) {
-            duplicate = 1;
+    int duplicate=0;
+    for (int i=0;i<account;i++) {
+        if (strcmp(acc[i].phone,a.phone)==0) {
+            duplicate=1;
             break;
         }
     }
@@ -181,9 +190,9 @@ while (1) {
     }
 }
     //Gan gia tri
-    a.balance = 0;
-    a.status = 1;
-    acc[account++] = a;
+    a.balance=0;
+    a.status=1;
+    acc[account++]=a;
     printf("Them tai khoan thanh cong.\n\n");
 }
 
@@ -391,19 +400,19 @@ void listAccountPagination() {
             continue;
         }
     start=(page_n-1)*page_s;
-     //Neu vuot
-     if (start>account) {
+    //Neu vuot
+    if (start>account) {
     	printf("Khong tim thay du lieu cho trang nay! Vui long nhap lai.\n\n");
             continue;
-	 }
+	    }
 	break;
-   }
+    }
     end= start+page_s;
     if (end > account) {
-   	end = account;
-   }  
+   	    end = account;
+    }  
     printf("====Trang %d====\n",page_n);
-    for (int i = start; i < end; i++) {
+    for (int i=start;i<end;i++) {
         printf("%d. ID: %s | Ten: %s | SDT: %s | So du: %.2f | Trang thai: %s\n",
             i + 1,acc[i].accountId,acc[i].fullName,acc[i].phone,
             acc[i].balance,acc[i].status == 1 ? "Active" : "Locked");
@@ -495,7 +504,7 @@ void transferMoney() {
 
     //So tien>0
     printf("Nhap so tien can chuyen: ");
-    scanf("%f",&amount);
+    scanf("%lf",&amount);
     if (amount<=0) {
         printf("So tien phai lon hon 0!\n\n");
         return;
@@ -510,8 +519,8 @@ void transferMoney() {
     acc[senderIndex].balance-=amount;
     acc[receiverIndex].balance+=amount;
     printf("\n===== GIAO DICH THANH CONG =====\n");
-    printf("Nguoi gui: %s | So du moi: %f\n", acc[senderIndex].accountId,acc[senderIndex].balance);
-    printf("Nguoi nhan: %s | So du moi: %f\n", acc[receiverIndex].accountId,acc[receiverIndex].balance);
+    printf("Nguoi gui: %s | So du moi: %lf\n", acc[senderIndex].accountId,acc[senderIndex].balance);
+    printf("Nguoi nhan: %s | So du moi: %lf\n", acc[receiverIndex].accountId,acc[receiverIndex].balance);
 }
 
 //F08
@@ -552,11 +561,11 @@ void viewTransactionHistory() {
     printf("\n=====LICH SU GIAO DICH=====\n");
     for (int i=0;i<transCount;i++) {
         if (strcmp(trans[i].senderId,targetId)==0) {
-            printf("[Out]  MaGD: %s | Gui den: %s | So tien: %f | Ngay: %s\n",
+            printf("[Out]  MaGD: %s | Gui den: %s | So tien: %lf | Ngay: %s\n",
                    trans[i].transId,trans[i].receiverId,trans[i].amount,trans[i].date);
         }
         if (strcmp(trans[i].receiverId,targetId)==0) {
-            printf("[In] MaGD: %s | Nhan tu: %s | So tien: %f | Ngay: %s\n",
+            printf("[In] MaGD: %s | Nhan tu: %s | So tien: %lf | Ngay: %s\n",
                    trans[i].transId,trans[i].senderId,trans[i].amount,trans[i].date);
         }
     }
